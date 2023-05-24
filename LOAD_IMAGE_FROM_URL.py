@@ -52,30 +52,10 @@ except ImportError:
 
 print("ESP32 SPI webclient test")
 
-TEXT_URL = "http://wifitest.adafruit.com/testwifi/index.html"
-JSON_URL = "http://api.coindesk.com/v1/bpi/currentprice/USD.json"
-
-
 # If you are using a board with pre-defined ESP32 Pins:
 esp32_cs = DigitalInOut(board.ESP_CS)
 esp32_ready = DigitalInOut(board.ESP_BUSY)
 esp32_reset = DigitalInOut(board.ESP_RESET)
-
-# If you have an AirLift Shield:
-# esp32_cs = DigitalInOut(board.D10)
-# esp32_ready = DigitalInOut(board.D7)
-# esp32_reset = DigitalInOut(board.D5)
-
-# If you have an AirLift Featherwing or ItsyBitsy Airlift:
-# esp32_cs = DigitalInOut(board.D13)
-# esp32_ready = DigitalInOut(board.D11)
-# esp32_reset = DigitalInOut(board.D12)
-
-# If you have an externally connected ESP32:
-# NOTE: You may need to change the pins to reflect your wiring
-# esp32_cs = DigitalInOut(board.D9)
-# esp32_ready = DigitalInOut(board.D10)
-# esp32_reset = DigitalInOut(board.D5)
 
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
 esp = adafruit_esp32spi.ESP_SPIcontrol(spi, esp32_cs, esp32_ready, esp32_reset)
@@ -104,28 +84,6 @@ print(
 )
 print("Ping google.com: %d ms" % esp.ping("google.com"))
 
-# esp._debug = True
-print("Fetching text from", TEXT_URL)
-r = requests.get(TEXT_URL)
-print("-" * 40)
-print(r.text)
-print("-" * 40)
-r.close()
-
-print()
-print("Fetching json from", JSON_URL)
-r = requests.get(JSON_URL)
-print("-" * 40)
-print(r.json())
-print("-" * 40)
-r.close()
-
-print("Done!")
-
-
-# Setup the file as the bitmap data source
-bitmap = displayio.OnDiskBitmap("/purple.bmp")
-
 #https = requests.Session(socket)
 url = "https://raw.githubusercontent.com/adafruit/Adafruit_CircuitPython_ImageLoad/main/examples/images/4bit.bmp"
 33
@@ -138,7 +96,7 @@ bytes_img = BytesIO(response.content)
 image, palette = adafruit_imageload.load(bytes_img)
 
 # Create a TileGrid to hold the bitmap
-tile_grid = displayio.TileGrid(image, pixel_shader=bitmap.pixel_shader)
+tile_grid = displayio.TileGrid(image, pixel_shader=palette)
 
 # Create a Group to hold the TileGrid
 group = displayio.Group()
@@ -148,15 +106,6 @@ group.append(tile_grid)
 
 # Add the Group to the Display
 display.show(group)
-
-"""
-tile_grid = displayio.TileGrid(image, pixel_shader=palette)
-
-group = displayio.Group(scale=1)
-group.append(tile_grid)
-board.DISPLAY.show(group)
-response.close()
-"""
 
 
 
